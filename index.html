@@ -60,10 +60,11 @@
 
 <header>
   <div class="eyebrow">이지민 · Mobile App Development</div>
-  <h1>Expo / React Native 앱을<br><em>출시까지</em> 끝냅니다.</h1>
+  <h1>모바일 앱과 AI 웹 서비스를<br><em>출시까지</em> 끝냅니다.</h1>
   <p class="sub">
-    기획된 앱을 App Store에 올리는 데 필요한 전 과정 — 개발, 인앱결제, 백엔드,
-    심사 대응 — 을 혼자 처리합니다. 최근 iOS 앱 2개를 <span class="hl">2주</span>에 심사 제출까지 완료했습니다.
+    iOS 앱은 개발부터 인앱결제·백엔드·심사 대응까지, 웹은 Next.js와 AI API 연동까지
+    혼자 처리합니다. 최근 iOS 앱 2개를 <span class="hl">2주</span>에 심사 제출까지 완료했고,
+    AI 카피 생성 서비스를 운영 중입니다.
   </p>
   <div class="contact">
     <a href="mailto:takixzsx.dev@gmail.com">takixzsx.dev@gmail.com</a>
@@ -75,10 +76,10 @@
 
 <h2>Summary</h2>
 <div class="stats">
-  <div class="stat"><b>2개</b><span>iOS 앱 심사 제출 완료</span></div>
-  <div class="stat"><b>~7,000줄</b><span>TypeScript (프로덕션)</span></div>
-  <div class="stat"><b>2주</b><span>앱 2개 개발 기간</span></div>
+  <div class="stat"><b>3개</b><span>출시·심사 제출 완료</span></div>
+  <div class="stat"><b>2주</b><span>iOS 앱 2개 개발 기간</span></div>
   <div class="stat"><b>SDK 54·57</b><span>Expo 최신 버전 대응</span></div>
+  <div class="stat"><b>Claude · OpenAI</b><span>AI API 프로덕션 연동</span></div>
 </div>
 
 <h2>제공 서비스</h2>
@@ -94,6 +95,10 @@
   <div class="svc-item">
     <h4>인앱결제 · 구독 연동</h4>
     <p>RevenueCat 기반 구독·소비성 상품, 서버 웹훅 검증까지. 두 앱에서 직접 구현했습니다.</p>
+  </div>
+  <div class="svc-item">
+    <h4>AI 기능 연동</h4>
+    <p>Claude / OpenAI 구조화 출력(json_schema), 폴백 체인, 레이트리밋. <b style="color:var(--tx)">모델이 사실을 왜곡하는 문제를 제약 설계로 해결</b>한 경험이 있습니다.</p>
   </div>
   <div class="svc-item">
     <h4>Supabase 백엔드 구축</h4>
@@ -161,6 +166,29 @@
   </div>
 </div>
 
+<div class="card">
+  <div class="card-top">
+    <h3>셀러카피 — AI 마케팅 카피 생성기</h3>
+    <span class="badge">웹 · 운영 중</span>
+  </div>
+  <div class="role">1인 개발 (기획 · 개발 · 배포 · 마케팅) · 스마트스토어·쿠팡 셀러 대상</div>
+  <p class="desc">
+    상품 정보를 입력하면 상세페이지 카피, 블로그 리뷰, 인스타 캡션 3종을 한 번에 생성합니다.
+    <a href="https://seller-copy.vercel.app" target="_blank" rel="noopener" style="color:var(--acc)">seller-copy.vercel.app</a>
+  </p>
+  <ul class="points">
+    <li><b>모델의 사실 왜곡을 제약 설계로 해결</b> — 개발 중 AI가 입력 스펙을 바꾸고("304 스테인리스"→"307") 검증 불가 수치를 생성하는 문제를 발견. 프롬프트 제약 5종을 설계해 4개 톤 × 6회 재검증에서 왜곡 0건 확인</li>
+    <li><b>구조화 출력 파싱</b> — json_schema로 응답 스키마를 고정해 파싱 실패를 제거</li>
+    <li><b>폴백 체인</b> — Claude Haiku 우선, 실패 시 OpenAI, 그마저 실패하면 데모 응답으로 서비스 연속성 확보</li>
+    <li><b>다층 레이트리밋</b> — IP 기준 분당·일일 한도와 인스턴스 전체 한도를 분리해 비용 상한을 고정</li>
+    <li><b>수요 검증 설계</b> — 유료 플랜을 페이크 도어로 구성해 결제 의향을 로그로 수집. 개발 전에 수요를 먼저 측정</li>
+  </ul>
+  <div class="stack">
+    <span>Next.js</span><span>TypeScript</span><span>Tailwind</span><span>Vercel</span>
+    <span>Claude API</span><span>OpenAI API</span><span>구조화 출력</span><span>SEO</span>
+  </div>
+</div>
+
 <h2>작업 방식</h2>
 <div class="note">
   <b style="color:var(--tx)">견적은 기능 단위로 쪼개서 드립니다.</b> 총액 하나만 던지지 않고
@@ -168,7 +196,7 @@
   <b style="color:var(--tx)">진행 상황은 주 2회 텍스트로 공유</b>하고, 중간 빌드를 TestFlight로 확인하실 수 있게 올립니다.
   회의보다 비동기 커뮤니케이션을 선호하지만 필요하시면 통화도 가능합니다.<br><br>
   <b style="color:var(--tx)">계약·정산은 사업자등록 기준</b>으로 처리하며 세금계산서 발행이 가능합니다.<br><br>
-  <b style="color:var(--tx)">범위 밖이면 먼저 말씀드립니다.</b> 실무 경험은 iOS / Expo·React Native 중심입니다.
+  <b style="color:var(--tx)">범위 밖이면 먼저 말씀드립니다.</b> 실무 경험은 iOS(Expo·React Native)와 웹(Next.js·AI 연동) 중심입니다.
   Android는 Expo 기반이라 코드는 공유되지만 스토어 출시 경험은 아직 없어, 맡게 되면 그 전제로 일정을 잡습니다.
   (참고: 2023년 11월 이후 개설된 Play 개인 개발자 계정은 비공개 테스트 12명 × 14일 연속 요건이 있어
   Android 신규 출시는 최소 3주가 필요합니다.)<br><br>
