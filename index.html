@@ -50,6 +50,7 @@
   .svc-item h4{font-size:15.5px;font-weight:650;margin-bottom:7px}
   .svc-item p{color:var(--tx2);font-size:13.5px;line-height:1.6}
   .hl{background:linear-gradient(180deg,transparent 62%,rgba(74,222,128,.22) 62%);color:var(--tx);font-weight:600}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--tx)}
   .note{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:9px;padding:18px 20px;color:var(--tx2);font-size:14px;margin-top:8px}
   footer{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);color:var(--tx3);font-size:13px}
   @media(max-width:600px){.wrap{padding:36px 18px 64px}}
@@ -76,14 +77,69 @@
 
 <h2>Summary</h2>
 <div class="stats">
+  <div class="stat"><b>4종</b><span>심사 반려 사유 대응</span></div>
   <div class="stat"><b>3개</b><span>출시·심사 제출 완료</span></div>
   <div class="stat"><b>2주</b><span>iOS 앱 2개 개발 기간</span></div>
   <div class="stat"><b>SDK 54·57</b><span>Expo 최신 버전 대응</span></div>
   <div class="stat"><b>Claude · OpenAI</b><span>AI API 프로덕션 연동</span></div>
 </div>
 
+<h2>Case Study — App Store 심사 반려를 어떻게 추적하는가</h2>
+<div class="card">
+  <div class="card-top">
+    <h3>반려 3회, 사유 4종을 원인까지 좁힌 기록</h3>
+    <span class="badge">진행 중</span>
+  </div>
+  <p class="role">Flipcheck · Lucid Timer · 2026.08 ~ 09 · 2.1(b) / 3.1.2(c) / 4.3(a) / 5.1.1(v)</p>
+  <p class="desc">
+    심사 반려에서 어려운 건 고치는 게 아니라 <b>무엇이 원인인지 특정하는 것</b>입니다.
+    애플은 사유 코드와 스크린샷 한 장만 줍니다. 아래는 그 한 장에서 원인까지 내려간 실제 기록입니다.
+    두 앱은 아직 심사 중이며, 통과했다고 말하지 않겠습니다. 여기 적은 건 전부 확인된 사실입니다.
+  </p>
+  <ul class="points">
+    <li><b>2.1(b) — 반려 스크린샷의 에러 문구로 코드 분기를 역추적.</b>
+      첨부된 화면의 알림이 <code>errors.productNotFound</code>였고, 그 문자열을 던지는 분기는 하나뿐이었습니다.
+      RevenueCat Offering이 빈 배열로 돌아올 때였습니다. 사유 코드가 아니라 문구가 답이었습니다.</li>
+    <li><b>결제는 성공했는데 권한이 안 켜지는 웹훅 레이스.</b>
+      소비성 재화 잔액은 RevenueCat 웹훅 → 서버 RPC를 거쳐 올라가는데,
+      앱이 그 전에 화면을 갱신해 잔액이 그대로였습니다. 심사자 눈에는 "결제했는데 아무 일도 안 일어남"입니다.
+      서버 반영을 폴링한 뒤 표시하도록 고쳤습니다.</li>
+    <li><b>고친 코드가 심사에 올라가지 않았다는 사실을 발견.</b>
+      같은 사유로 또 반려된 뒤 App Store Connect의 <b>Version reviewed</b> 필드를 확인했더니
+      애플이 본 건 수정 전 빌드였습니다. 재제출 때 새 빌드가 버전에 붙지 않은 것입니다.
+      <b>재제출 전에 Version reviewed를 확인하지 않으면 같은 반려를 반복합니다.</b></li>
+    <li><b>4.3(a) Design: Spam — 계정 이전의 흔적.</b>
+      개인 계정에서 사업자 계정으로 옮기면서 구 계정의 앱 레코드가 남아 있었고,
+      애플 시스템에는 서로 다른 개발자의 동일 앱으로 보였습니다.
+      앱 이전(App Transfer)은 출시 이력이 있어야 가능해 쓸 수 없었습니다.</li>
+    <li><b>3.1.2(c) 구독 표기.</b>
+      페이월 CTA에 금액·청구 주기·갱신 조건이 보이도록 수정. 심사용 스크린샷도 해당 플랜이 선택된 상태로 다시 찍어야 합니다.</li>
+    <li><b>배제로 좁히기.</b>
+      결제 실패 한 건을 두고 유료 앱 계약·세금 서류·상품 구성·도입 오퍼·가격·판매 지역·심사용 스크린샷,
+      그리고 RevenueCat의 번들 ID·In-App Purchase Key·Offering 연결까지 전수 점검해 하나씩 배제했습니다.
+      심사자 기기가 남긴 익명 고객 레코드를 찾아 <b>트랜잭션이 서버에 기록되지 않았다</b>는 것까지 확인했습니다.</li>
+    <li><b>가장 비싼 교훈 — 에러를 삼키면 심사 사이클을 버립니다.</b>
+      페이월이 모든 결제 예외를 "Please try again." 한 줄로 덮고 있었습니다.
+      그 한 줄 때문에 세 번의 심사를 추측으로 보냈습니다. 지금은 실패 시 원인 코드를 화면에 남깁니다.</li>
+  </ul>
+  <div class="note">
+    같이 처리한 운영 항목: 유료 앱 계약, W-8BEN(조세조약 10%), Certificate of Foreign Status,
+    EU 디지털서비스법 거래자 등록, 한국 전자상거래법 규정 준수, 개인정보 수집 설문,
+    구독 그룹·소모품 IAP 등록과 심사용 스크린샷, Supabase Edge Function의 JWT 검증 해제,
+    RevenueCat 웹훅의 샌드박스 이벤트 전송 설정.
+  </div>
+  <div class="stack">
+    <span>App Store Connect</span><span>App Review Guidelines</span><span>RevenueCat</span>
+    <span>StoreKit 2</span><span>Supabase Edge Functions</span><span>EAS Build / Submit</span>
+  </div>
+</div>
+
 <h2>제공 서비스</h2>
 <div class="svc">
+  <div class="svc-item">
+    <h4>App Store 심사 반려 해결</h4>
+    <p>반려 사유와 첨부 스크린샷을 받아 원인을 특정하고 수정까지 처리합니다. 보통 1~3일. 원인을 못 찾으면 비용을 받지 않습니다.</p>
+  </div>
   <div class="svc-item">
     <h4>하청 · 오버플로우 대응</h4>
     <p>물량이 몰릴 때 전체든 모듈 단위든 받습니다. 텍스트 비동기 커뮤니케이션으로 충분하고, 첫 건은 단가 조정 가능합니다.</p>
@@ -205,7 +261,7 @@
 
 <footer>
   이지민 · jiminlov2@naver.com · 카카오톡 duckyut<br>
-  포트폴리오 최종 수정 2026.08 · 문의는 이메일이 가장 빠릅니다.
+  포트폴리오 최종 수정 2026.09 · 문의는 이메일이 가장 빠릅니다.
 </footer>
 
 </div>
